@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.LongAdder;
  *      1. 保证其他参数相同情况下，改变 GC 算法：串行/并行/CMC/G1，打印GC日志分析
  *          a. 使用串行GC "-XX:+UseSerialGC"
  *          b. 使用并行GC "-XX:+UseParallelGC"
- *          c. 使用CMC GC "-XX:+UseConcMarkSweepGC"
+ *          c. 使用CMS GC "-XX:+UseConcMarkSweepGC"
  *          4. 使用G1 GC "-XX:+UseG1GC"
  *      2. 保证使用 java8 默认GC算法(并行)的情况下，改变其他参数查看日志变化
  *          a. 修改设置的堆内存大小 -Xmx1g -Xms1g 与 -Xmx512m -Xms512m
