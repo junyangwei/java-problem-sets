@@ -11,6 +11,6 @@
 7. 执行与测试.
 
 ## 编写的类
-- [HttpHandler类](https://github.com/junyangwei/java-problem-sets/blob/main/02nio/problem_set_5/nio01/src/main/java/work/HttpHandler.java)
-- [HttpInitializer类](https://github.com/junyangwei/java-problem-sets/blob/main/02nio/problem_set_5/nio01/src/main/java/work/HttpInitializer.java)
-- [NettyHttpServer类](https://github.com/junyangwei/java-problem-sets/blob/main/02nio/problem_set_5/nio01/src/main/java/work/NettyHttpServer.java)
+- [HttpHandler类](https://github.com/junyangwei/java-problem-sets/blob/main/02nio/problem_set_5/nio01/src/main/java/nio01/netty/HttpHandler.java)
+- [HttpInitializer类](https://github.com/junyangwei/java-problem-sets/blob/main/02nio/problem_set_5/nio01/src/main/java/nio01/netty/HttpInitializer.java)
+- [NettyHttpServer类](https://github.com/junyangwei/java-problem-sets/blob/main/02nio/problem_set_5/nio01/src/main/java/nio01/netty/NettyHttpServer.java)
