@@ -22,4 +22,4 @@
 所有打印的日志，都在保存在这个文件夹下 log 结尾的文件
 
 ## 日志分析
-[日志分析]()
+[日志分析](https://github.com/junyangwei/java-problem-sets/blob/main/02nio/problem_set_1/GC%20%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90.md)
