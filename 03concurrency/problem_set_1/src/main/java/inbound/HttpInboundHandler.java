@@ -11,6 +11,7 @@ import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import outbound.httpclient4.HttpOutboundHandler;
+import outbound.netty4.NettyHttpClientOutboundHandler;
 import router.ApiTagEnum;
 import router.HttpEndpointRouter;
 
@@ -45,6 +46,11 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     private HttpOutboundHandler handler;
 
     /**
+     * Netty HTTP 客户端工具
+     */
+    private NettyHttpClientOutboundHandler nettyHttpHandler;
+
+    /**
      * Http 请求过滤器类对象
      */
     private HttpRequestFilter filter = new HeaderHttpRequestFilter();
@@ -56,6 +62,7 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     public HttpInboundHandler(List<String> proxyServer) {
         this.proxyServer = proxyServer;
         this.handler = new HttpOutboundHandler(proxyServer);
+        this.nettyHttpHandler = new NettyHttpClientOutboundHandler(proxyServer);
     }
 
     /**
@@ -93,7 +100,10 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
             if (serverPort == ApiTagEnum.DEFAULT.getPort()) {
                 handlerTest(fullHttpRequest, ctx);
             } else {
-                handler.handle(fullHttpRequest, ctx, filter, serverPort);
+                // 使用 HttpClient 工具
+//                handler.handle(fullHttpRequest, ctx, filter, serverPort);
+                // 使用 netty Http 客户端工具
+                nettyHttpHandler.handle(fullHttpRequest, ctx, filter, serverPort);
             }
         } catch (Exception e) {
             e.printStackTrace();

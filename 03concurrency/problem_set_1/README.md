@@ -19,7 +19,6 @@
 
 ## 其他说明：
 - 过滤器目录：/src/main/java/filter
-- 
 
 ## 拟真场景及预期
 ### 场景
@@ -42,7 +41,12 @@
     - 查看是否模拟在不同机器内网"IP"间调用
     - 查看请求头和响应头信息
 
-## 校验示例
-1. 启动模拟的后端程序：java -jar src/main/resources/gateway-server-0.0.1-SNAPSHOT.jar
-    - Tips：目标访问接口为 http://localhost:8088/api/hello
-2. 
+## 校验注意
+1. 先启动resources目录下 test01 和 test02 服务
+    - java -jar test01-0.0.1-SNAPSHOT.jar
+    - java -jar test02-0.0.1-SNAPSHOT.jar
+2. 再启动主程序：ApplicationStart
+3. 最后再分别访问测试地址
+    - http://localhost:8800
+    - http://localhost:8800/test01api/get
+    - http://localhost:8800/test02api/get
