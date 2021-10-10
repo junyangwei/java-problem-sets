@@ -15,6 +15,7 @@ public class HeaderHttpRequestFilter implements HttpRequestFilter {
      * @param fullHttpRequest 完整的 HTTP 请求
      * @param ctx netty 的通道处理器的上下文
      */
+    @Override
     public void filter(FullHttpRequest fullHttpRequest, ChannelHandlerContext ctx) {
         // 为请求头添加 "mal" 和 "soul"
         fullHttpRequest.headers().set("mao", "soul");

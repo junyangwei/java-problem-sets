@@ -11,8 +11,10 @@ import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import outbound.httpclient4.HttpOutboundHandler;
+import router.ApiTagEnum;
+import router.HttpEndpointRouter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
@@ -38,7 +40,7 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     private final List<String> proxyServer;
 
     /**
-     * Http 外部处理器
+     * Http 外部处理器（第三方工具）
      */
     private HttpOutboundHandler handler;
 
@@ -66,23 +68,33 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     }
 
     /**
-     * 通道读取数据方法
+     * 通道读取数据方法，区分开请求的具体服务
+     *  - uri 包含 /test01api/ 则应调用 test01 后端服务（端口为 8801）
+     *  - uri 包含 /test02api/ 则应调用 test02 后端服务（端口为 8802）
      * @param ctx 通道处理器上下文
      * @param msg 完整的请求
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        String startTime = new Date().toString();
+        // 打印收到请求时间
+        logger.info("channelRead流量接口请求开始，时间为{}", LocalDateTime.now());
         try {
-            logger.info("channelRead流量接口请求开始，时间为{}", startTime);
+            // 将 msg 强制转换成一个 FullHttpRequest 对象，拿到它内部的结构
             FullHttpRequest fullHttpRequest = (FullHttpRequest) msg;
+
+            // 获取这次请求的 HTTP 协议的 URL 是什么，并打印
             String uri = fullHttpRequest.uri();
             logger.info("接收到的请求url为{}", uri);
-            if (uri.contains("/test")) {
-                handlerTest(fullHttpRequest, ctx);
-            }
 
-            handler.handle(fullHttpRequest, ctx, filter);
+            // 获取 uri 对应的服务端口
+            int serverPort = HttpEndpointRouter.getApiPort(uri);
+
+            // 若为 netty 网管服务的默认端口，则直接返回"Hello, netty"
+            if (serverPort == ApiTagEnum.DEFAULT.getPort()) {
+                handlerTest(fullHttpRequest, ctx);
+            } else {
+                handler.handle(fullHttpRequest, ctx, filter, serverPort);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -97,15 +109,19 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
      * @param ctx 通道处理器上下文
      */
     private void handlerTest(FullHttpRequest fullHttpRequest, ChannelHandlerContext ctx) {
-        // 定义完整的 Http 响应
+        // 定义完整的 Http 响应 FullHttpResponse 对象
         FullHttpResponse response = null;
         try {
             // 测试方法的响应内容为 Hello, netty
             String value = "Hello, netty";
             // 模拟一个 Http 请求响应结果："HTTP/1.1"，"状态码为200"，"返回值UTF-8格式"
             response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(value.getBytes("UTF-8")));
+            // 设置响应头参数：内容类型为 JSON
+            response.headers().set("Content-Type", "application/json");
+            // 设置响应头参数：内容长度（注意，不设置这个参数可能会导致接收方异常）
+            response.headers().setInt("Content-Length", response.content().readableBytes());
         } catch (Exception e) {
-            logger.error("处理测试接口出错", e);
+            logger.error("处理测试接口出错，{}", e.getMessage());
             // 若失败，同样模拟一个 Http 请求响应结果："HTTP/1.1"，"状态码为204"
             response = new DefaultFullHttpResponse(HTTP_1_1, NO_CONTENT);
         } finally {

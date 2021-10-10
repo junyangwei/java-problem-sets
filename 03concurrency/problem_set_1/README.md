@@ -20,3 +20,29 @@
 ## 其他说明：
 - 过滤器目录：/src/main/java/filter
 - 
+
+## 拟真场景及预期
+### 场景
+1. 假设有两台机器(在同一机房下)，每台机器上都部署后端服务：netty_test01 和 netty_test02
+2. 在本地模拟直接使用 localhost 和 127.0.0.1 模拟是两台机器的内网IP
+3. netty_test01 服务上有接口："GET /test01api/get" 和 "POST /test01api/post"
+4. netty_test02 服务上有接口："GET /test02api/get" 和 "POST /test02api/post"
+5. netty_test01 固定启动的端口为 8801，netty_test02 固定启动端口为 8802
+6. 实现的 netty 网关服务，启动端口为 8800
+7. 通过过滤器在 请求头 和 响应头 加"机器IP"以及"后端服务名"
+
+### 预期
+1. 访问 netty 网关服务：
+    - http://127.0.0.1:8800/test01api/ 时会自动将请求发到 netty_test01 服务
+    - http://127.0.0.1:8800/test02api/ 时会自动将请求发到 netty_test02 服务
+2. 打印访问 netty 网关服务代理请求的信息
+    - 发送的实际后端服务地址
+    - 其响应的 body
+    - 查看 GET 方法和 POST 方法是否成功
+    - 查看是否模拟在不同机器内网"IP"间调用
+    - 查看请求头和响应头信息
+
+## 校验示例
+1. 启动模拟的后端程序：java -jar src/main/resources/gateway-server-0.0.1-SNAPSHOT.jar
+    - Tips：目标访问接口为 http://localhost:8088/api/hello
+2. 

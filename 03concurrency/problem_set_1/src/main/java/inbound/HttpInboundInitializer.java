@@ -29,10 +29,13 @@ public class HttpInboundInitializer extends ChannelInitializer<SocketChannel> {
      */
     @Override
     public void initChannel(SocketChannel ch) {
-        // 定义通道传输 p
+        // 通过 SocketChannel 获取它的管道
         ChannelPipeline p = ch.pipeline();
+        // 添加 HttpServer 的编码器
         p.addLast(new HttpServerCodec());
+        // 再添加一个报文聚合器 HttpObjectAggregator
         p.addLast(new HttpObjectAggregator(1024 * 1024));
+        // 最后添加一个 HttpHandler 自定义的处理器
         p.addLast(new HttpInboundHandler(this.proxyServer));
     }
 }
