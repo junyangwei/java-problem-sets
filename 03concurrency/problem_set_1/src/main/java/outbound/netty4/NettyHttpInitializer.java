@@ -1,5 +1,6 @@
 package outbound.netty4;
 
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -13,11 +14,15 @@ import io.netty.handler.ssl.SslContext;
  */
 public class NettyHttpInitializer extends ChannelInitializer<SocketChannel> {
 
+    private final ChannelHandlerContext serverCtx;
+
     private final SslContext sslCtx;
 
-    public NettyHttpInitializer(SslContext sslCtx) {
+    public NettyHttpInitializer(SslContext sslCtx, ChannelHandlerContext serverCtx) {
         this.sslCtx = sslCtx;
+        this.serverCtx = serverCtx;
     }
+
 
     /**
      * 重写父类的 initChannel 方法
@@ -46,6 +51,6 @@ public class NettyHttpInitializer extends ChannelInitializer<SocketChannel> {
         p.addLast(new HttpObjectAggregator(1024 * 1024));
 
         // 添加自定义 Netty Http 客户端处理器
-        p.addLast(new NettyHttpClientOutboundHandler());
+        p.addLast(new NettyHttpClientOutboundHandler(this.serverCtx));
     }
 }

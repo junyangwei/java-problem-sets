@@ -26,7 +26,7 @@ public class NettyHttpClient {
      * @param url 指定服务完整的 url，如 http://localhost:8801/
      * @throws Exception 异常信息
      */
-    public void connect(String url) throws Exception {
+    public void connect(String url, ChannelHandlerContext serverCtx) throws Exception {
         // 解析 url，获取 host 以及 端口，并且兼容 https
         URI uri = new URI(url);
         String scheme = uri.getScheme() == null ? "http" : uri.getScheme();
@@ -54,7 +54,7 @@ public class NettyHttpClient {
             b.group(group)
                     .channel(NioSocketChannel.class)
 //                    .option(ChannelOption.SO_KEEPALIVE, true)
-                    .handler(new NettyHttpInitializer(sslCtx));
+                    .handler(new NettyHttpInitializer(sslCtx, serverCtx));
 
             // 建立连接
             Channel ch = b.connect(host, port).sync().channel();
@@ -83,6 +83,6 @@ public class NettyHttpClient {
      */
     public static void main(String[] args) throws Exception {
         String test01Url = System.getProperty("url", "http://127.0.0.1:8801/test01api/get");
-        new NettyHttpClient().connect(test01Url);
+//        new NettyHttpClient().connect(test01Url);
     }
 }

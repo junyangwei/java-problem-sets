@@ -15,13 +15,13 @@ public interface HttpEndpointRouter {
      * @param uri 请求的 uri
      * @return 端口字符串
      */
-    static int getApiPort(String uri) {
-        if (uri.contains(ApiTagEnum.TEST01.getApiMatch())) {
-            return ApiTagEnum.TEST01.getPort();
-        } else if (uri.contains(ApiTagEnum.TEST02.getApiMatch())) {
-            return ApiTagEnum.TEST02.getPort();
+    static String getApiHost(String uri) {
+        if (uri.startsWith(ApiTagEnum.TEST01.getApiTag())) {
+            return ApiTagEnum.TEST01.getApiHost();
+        } else if (uri.startsWith(ApiTagEnum.TEST02.getApiTag())) {
+            return ApiTagEnum.TEST02.getApiHost();
         } else {
-            return ApiTagEnum.DEFAULT.getPort();
+            return ApiTagEnum.DEFAULT.getApiHost();
         }
     }
 

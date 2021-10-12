@@ -1,5 +1,6 @@
 package inbound;
 
+import filter.ProxyBizFilter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -37,5 +38,7 @@ public class HttpInboundInitializer extends ChannelInitializer<SocketChannel> {
         p.addLast(new HttpObjectAggregator(1024 * 1024));
         // 最后添加一个 HttpHandler 自定义的处理器
         p.addLast(new HttpInboundHandler(this.proxyServer));
+
+        System.out.println("#### Netty HTTP 服务端通信通道初始化成功.");
     }
 }

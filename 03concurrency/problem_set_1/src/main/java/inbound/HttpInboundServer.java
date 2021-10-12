@@ -73,7 +73,8 @@ public class HttpInboundServer {
 
             // 把启动器入口点绑定上指定端口，并且开启它的channel，将服务器启动
             Channel ch = b.bind(port).sync().channel();
-            System.out.println("开启 netty http 服务器，监听地址和端口 http://127.0.0.1:" + port + "/");
+
+            System.out.println("#### Netty HTTP 服务端启动成功，地址：http://127.0.0.1:" + port + "/");
             ch.closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();

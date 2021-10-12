@@ -2,6 +2,7 @@ package inbound;
 
 import filter.HeaderHttpRequestFilter;
 import filter.HttpRequestFilter;
+import filter.ProxyBizFilter;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,6 +12,7 @@ import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import outbound.httpclient4.HttpOutboundHandler;
+import outbound.netty4.NettyHttpClient;
 import outbound.netty4.NettyHttpClientOutboundHandler;
 import router.ApiTagEnum;
 import router.HttpEndpointRouter;
@@ -51,9 +53,9 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     private NettyHttpClientOutboundHandler nettyHttpHandler;
 
     /**
-     * Http 请求过滤器类对象
+     * HTTP 请求代理过滤器类对象
      */
-    private HttpRequestFilter filter = new HeaderHttpRequestFilter();
+    private HttpRequestFilter proxyBizFilter = new ProxyBizFilter();
 
     /**
      * Http 内部处理器构造函数
@@ -62,7 +64,7 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     public HttpInboundHandler(List<String> proxyServer) {
         this.proxyServer = proxyServer;
         this.handler = new HttpOutboundHandler(proxyServer);
-        this.nettyHttpHandler = new NettyHttpClientOutboundHandler(proxyServer);
+//        this.nettyHttpHandler = new NettyHttpClientOutboundHandler(proxyServer);
     }
 
     /**
@@ -89,21 +91,30 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
             // 将 msg 强制转换成一个 FullHttpRequest 对象，拿到它内部的结构
             FullHttpRequest fullHttpRequest = (FullHttpRequest) msg;
 
-            // 获取这次请求的 HTTP 协议的 URL 是什么，并打印
-            String uri = fullHttpRequest.uri();
-            logger.info("接收到的请求url为{}", uri);
+            // 请求过滤器校验通过则继续，否则写入代理失败响应
+            if (this.proxyFilter(fullHttpRequest, ctx)) {
 
-            // 获取 uri 对应的服务端口
-            int serverPort = HttpEndpointRouter.getApiPort(uri);
+                // 获取这次请求的 HTTP 协议的 URL 是什么，并打印
+                String uri = fullHttpRequest.uri();
+                logger.info("## 接收到新的请求，uri:{}", fullHttpRequest.uri());
 
-            // 若为 netty 网管服务的默认端口，则直接返回"Hello, netty"
-            if (serverPort == ApiTagEnum.DEFAULT.getPort()) {
-                handlerTest(fullHttpRequest, ctx);
+                // 获取 uri 对应的 后端 HOST
+                String serverHost = HttpEndpointRouter.getApiHost(uri);
+
+                if (serverHost.equals(ApiTagEnum.DEFAULT.getApiHost())) {
+                    handlerTest(fullHttpRequest, ctx);
+                } else {
+                    // 获取代理的后端路径
+                    String url = serverHost + fullHttpRequest.uri();
+                    // 发送请求到分配的后端服务（做了一个代理）TODO: 区分 GET 和 POST 请求
+                    try {
+                        new NettyHttpClient().connect(url, ctx);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             } else {
-                // 使用 HttpClient 工具
-//                handler.handle(fullHttpRequest, ctx, filter, serverPort);
-                // 使用 netty Http 客户端工具
-                nettyHttpHandler.handle(fullHttpRequest, ctx, filter, serverPort);
+                this.writeProxyFailResponse(ctx);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,6 +122,30 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
             ReferenceCountUtil.release(msg);
         }
 
+    }
+
+    /**
+     * 校验请求代理路径是否在白名单内
+     * @param fullHttpRequest 请求
+     * @param ctx 通道处理器上下文
+     */
+    private boolean proxyFilter(FullHttpRequest fullHttpRequest, ChannelHandlerContext ctx) {
+        try {
+            proxyBizFilter.filter(fullHttpRequest, ctx);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 写入代理过滤失败的响应结果
+     */
+    private void writeProxyFailResponse(ChannelHandlerContext ctx) {
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NO_CONTENT);
+        ctx.write(response).addListener(ChannelFutureListener.CLOSE);
+        ctx.close();
     }
 
     /**

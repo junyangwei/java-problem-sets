@@ -8,15 +8,21 @@ import lombok.Getter;
  */
 @Getter
 public enum ApiTagEnum {
-    DEFAULT(8800, "/"),
-    TEST01(8801, "/test01api/"),
-    TEST02(8802, "/test02api/");
+    DEFAULT("/", "http://127.0.0.1:8800/"),
+    TEST01("/test01api", "http://127.0.0.1:8801/"),
+    TEST02("/test02api", "http://127.0.0.1:8002/");
 
-    private int port;
-    private String apiMatch;
+    /**
+     * 后端服务 uri 前缀标记
+     */
+    private String apiTag;
+    /**
+     * 后端服务 host
+     */
+    private String apiHost;
 
-    ApiTagEnum(int port, String apiMatch) {
-        this.port = port;
-        this.apiMatch = apiMatch;
+    ApiTagEnum(String apiTag, String apiHost) {
+        this.apiTag = apiTag;
+        this.apiHost = apiHost;
     }
 }
