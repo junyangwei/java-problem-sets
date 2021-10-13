@@ -14,6 +14,7 @@
     - [单独实现 Netty 客户端访问 后端 HTTP 参考 nettyhttpclient01 文件夹](https://github.com/junyangwei/netty-practices/tree/main/src/main/java/nettyhttpclient01) 
     - [单独实现 Netty 服务端 参考 nettyhttpserver01 文件夹](https://github.com/junyangwei/netty-practices/tree/main/src/main/java/nettyhttpserver01) 
     - [整合 Netty 服务端 与 Netty 客户端结合的实践，启动器在 nettyhttpserver02 文件夹](https://github.com/junyangwei/netty-practices/tree/main/src/main/java/nettyhttpserver02)
+        - 关于nettyhttpserver02的[特别说明](https://github.com/junyangwei/netty-practices#%E7%89%B9%E5%88%AB%E8%AF%B4%E6%98%8E)
 
 3. （必做）实现过滤器。
     - netty-practices 中过滤器在 [ProxyBizFilter](https://github.com/junyangwei/netty-practices/blob/main/src/main/java/filter01/ProxyBizFilter.java)
