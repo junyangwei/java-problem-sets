@@ -14,7 +14,7 @@
 ## 作业2
 思考有多少种方式，在 main 函数启动一个新线程，运行一个方法，拿到这
 个方法的返回值后，退出主线程
-- [编码地址](https://github.com/junyangwei/problem-sets/04fx/src/main/java/concurrency/NewThreadGetTest.java)
+- [编码地址](https://github.com/junyangwei/java-problem-sets/blob/main/04fx/src/main/java/concurrency/NewThreadGetTest.java)
 
 ## 作业3
 列举常用的并发操作 API 和工具类，简单分析其使用场景和优缺点
