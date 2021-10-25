@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 注册一个名为 beanAssemble01-01 的 bean，
+         会调用 BeanAssemble01 类默认构造函数 -->
+    <bean id="beanAssemble01-01" class="bean.BeanAssemble01" />
+
+    <!-- 注册一个名为 beanAssemble01-02 的 bean，
+         会调用 BeanAssemble01 类 set 方法为 id, name 和 list 赋值 -->
+    <bean id="beanAssemble01-02" class="bean.BeanAssemble01">
+        <property name="id" value ="2" />
+        <property name="name" value="BeanAssembleTest02.." />
+        <property name="list">
+            <list>
+                <value>test01-03</value>
+                <value>test01-04</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 使用 context 命名空间，通知 Spring 扫描指定包下所有 Bean 类，进行注解解析 -->
+    <context:component-scan base-package="bean" />
+
+</beans>
