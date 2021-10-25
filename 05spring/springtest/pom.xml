@@ -42,6 +42,19 @@
             <version>1.2</version>
         </dependency>
 
+        <!-- 引入连接 MySQL 依赖 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.27</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version>
+        </dependency>
+
         <!-- 引入 Spring 常规的依赖 -->
         <dependency>
             <groupId>org.springframework</groupId>
