@@ -23,5 +23,6 @@
 
     <!-- 使用 context 命名空间，通知 Spring 扫描指定包下所有 Bean 类，进行注解解析 -->
     <context:component-scan base-package="bean" />
+    <context:component-scan base-package="autoassemble" />
 
 </beans>
