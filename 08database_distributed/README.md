@@ -76,8 +76,6 @@ update t_order set original_amount = 100 where order_id = 667285169317064707;
 ## 必做作业2
 基于 hmily TCC 或 ShardingSphere 的 Atomikos XA 实现一个简单的分布式事务应用 demo（二选一），提交到 Github
 
-基于 hmily TCC 或 ShardingSphere 的 Atomikos XA 实现一个简单的分布式事务应用 demo（二选一），提交到 Github
-
 [作业地址](https://github.com/junyangwei/springcloud-test) 
 
 本次作业我选择：Hmily TCC 来实现一个简单的场景： 调用 **商品服务A** 创建商品的接口，这个接口中内嵌了调用 **库存服务B** 的创建库存的demo接口，然后 A 服务中执行 confirm 的逻辑
@@ -99,7 +97,7 @@ Tips：作业初始化的 commit 带上了很多不相关的代码，可以跳�
 三、SpringCloud 的概念以及基本知识导致耗费大量时间；
 
 - 首先从思维层面来看，使用 SpringBoot 是以某个具体的服务为主，而引入 SpringCloud 是为了能够使多个子服务之间的调度更便捷；
-- 我之前一直停留在单个服务，已为在单个服务中就能够完成 Hmily 的 demo，殊不知在思想上已经和其原设计目的就偏离了
+- 我之前一直停留在单个服务，以为在单个服务中就能够完成 Hmily 的 demo，殊不知在思想上已经和其原设计目的就偏离了
 - 解决：阅读 SpringCloud 官方文档后，目标变为设计三个服务
   - Eureka服务：负责服务注册与发现 （引入 spring-cloud-starter-netflix-eureka-server 依赖包）
     - 参考 Spring 官网的 [Service Discovery - Eureka Server](https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#spring-cloud-eureka-server)
@@ -121,3 +119,4 @@ java.sql.SQLSyntaxErrorException: Table 'sell.hmily_transaction_participant' doe
 ...
 ```
 
+五、Hmily 官方文档太简陋了，一些 demo 设计得太复杂了，看了很多文章都没法解决，最后还是自己回到 SpringCloud 一步步搭建服务才实现了最基本的 demo
