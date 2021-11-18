@@ -56,7 +56,9 @@ SELECT * FROM orders WHERE update_time = '2021-11-13 13:46:29';
 ## 必做作业2
 读写分离 - 动态切换数据源版本 1.0
 - [作业提交](https://github.com/junyangwei/druid-practice/commit/44638b719854c0af588d358c843dbfeb9dc3beed) 
+- 有点把简单的问题复杂化了！
 
 ## 必做作业3
 读写分离 - 数据库框架版本 2.0
 - [作业提交](https://github.com/junyangwei/druid-practice/commit/cae546f9884a4525834f6cb62c7d4f143dc8e3ca)
+不得不说，比起手动动态切换数据源版本，使用 ShardingSphere-JDBC 真的轻松太多了！！！
