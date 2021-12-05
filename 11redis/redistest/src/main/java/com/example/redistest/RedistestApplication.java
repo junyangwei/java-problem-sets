@@ -1,8 +1,6 @@
 package com.example.redistest;
 
-import org.redisson.api.RBucket;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+import org.redisson.api.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,12 +64,12 @@ public class RedistestApplication {
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
-
-		// 解锁
-		if (lock.isHeldByCurrentThread()) {
-			lock.unlock();
-			System.out.println(Thread.currentThread().getName() + "解锁...");
+		} finally {
+			// 解锁
+			if (lock.isHeldByCurrentThread()) {
+				lock.unlock();
+				System.out.println(Thread.currentThread().getName() + "解锁...");
+			}
 		}
 	}
 
@@ -96,5 +94,67 @@ public class RedistestApplication {
 		// 解锁
 		bucket.delete();
 		System.out.println(Thread.currentThread().getName() + "解锁成功...");
+	}
+
+	private Integer stockNum = 10;
+	private String stockNumKey = "stock-num-test";
+
+	@GetMapping("/test_sub_stock")
+    public String subStockTest() {
+	    // 初始化库存到缓存中
+		RBucket<Integer> bucket = client.getBucket(stockNumKey);
+		bucket.set(stockNum, 1, TimeUnit.DAYS);
+
+		// 开12个线程测试
+		for (int i = 0; i < 13; i++) {
+			new Thread(() -> stockDecr()).start();
+		}
+		return "test success...";
+	}
+
+	/**
+	 * 扣减库存
+	 * 	- 先添加分布式锁
+	 * 	- 再获取缓存中的库存扣减（总感觉这个思路有点复杂）
+	 * @return true or false
+	 */
+	public boolean stockDecr() {
+	    // 定义扣减库存结果
+		boolean result = false;
+		// 获取当前线程名称，后续打印信息用
+		String threadName = Thread.currentThread().getName();
+
+	    // 获取锁，进行加锁操作
+		RLock lock = client.getLock("lock-stock-desc-test");
+		try {
+			boolean lockRes = lock.tryLock(3, TimeUnit.SECONDS);
+
+			// 加锁成功，进行库存扣减逻辑
+			if (lockRes) {
+				RBucket<Integer> bucket = client.getBucket("stock-num-test");
+				int stock = bucket.get();
+				if (stock > 0) {
+					bucket.set(stock - 1, 1, TimeUnit.DAYS);
+					result = true;
+					System.out.println(threadName + "扣减库存成功，当前库存" + (stock - 1));
+
+					// 再完善一点，还可以进行数据库库存扣减操作，使用乐观锁
+				} else {
+					System.out.println(threadName + "扣减库存失败，库存不足");
+				}
+			} else {
+			    System.out.println(threadName + "加锁失败...");
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			// 解锁
+			if (lock.isHeldByCurrentThread()) {
+				lock.unlock();
+				System.out.println(Thread.currentThread().getName() + "解锁...");
+			}
+		}
+
+		return result;
 	}
 }
