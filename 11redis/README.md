@@ -9,7 +9,8 @@
     - 测试：项目启动后测试链接为 http://localhost:8080/test_lock
 - 在 Java 中实现一个分布式计数器，模拟减库存；
     - [相关测试代码链接](https://github.com/junyangwei/java-problem-sets/commit/d48b9ec5e2c1d0914ba11dd466cdd197738cbe64)
-    - 备注：使用了分布式锁 + set 方法模拟扣减库存，并进行库存为0校验 
+    - 备注：使用了分布式锁 + set 方法模拟扣减库存，并进行库存为0校验
+    - 测试：项目启动后测试链接为 http://localhost:8080/test_sub_stock
 
 ### 测试结果及分析
 ![lock_test](lock_test.png)
@@ -31,6 +32,7 @@
 ## 必做作业2
 基于 Redis 的 PubSub 实现订单异步处理
 - [相关测试代码commit](https://github.com/junyangwei/java-problem-sets/commit/46b2371a7ae32207b8c7834258df9b4134ae880f)
+- 测试：项目启动后测试链接为 http://localhost:8080/order_publish
 
 ### 测试结果及分析
 ![pub_and_sub](pub_and_sub.png)
